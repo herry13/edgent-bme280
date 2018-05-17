@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.uog.socs</groupId>
+  <artifactId>edgent-bme280</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>Edgent BME280</name>
+
+  <properties>
+    <edgent.runtime.platform/>   <!-- set by -Pplatform-* -->
+    <edgent.runtime.groupId>org.apache.edgent${edgent.runtime.platform}</edgent.runtime.groupId>
+    <edgent.runtime.version>1.2.0</edgent.runtime.version>
+
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputencoding>UTF-8</project.reporting.outputencoding>
+    <maven.version>3.3.1</maven.version>
+
+    <jetty.version>9.3.6.v20151106</jetty.version>
+    <gson.version>2.2.4</gson.version>
+    <slf4j.version>1.7.12</slf4j.version>
+    <retrolambda.version>2.5.1</retrolambda.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-core</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${edgent.runtime.groupId}</groupId>
+      <artifactId>edgent-providers-direct</artifactId>
+      <version>${edgent.runtime.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${edgent.runtime.groupId}</groupId>
+      <artifactId>edgent-connectors-mqtt</artifactId>
+      <version>${edgent.runtime.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <!-- build app to run on Java7 platform -->
+      <id>platform-java7</id>
+      <properties>
+        <platform.java7>true</platform.java7>
+        <edgent.runtime.platform>.java7</edgent.runtime.platform>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>net.orfjackal.retrolambda</groupId>
+            <artifactId>retrolambda-maven-plugin</artifactId>
+            <version>${retrolambda.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>process-main</goal>
+                  <goal>process-test</goal>
+                </goals>
+                <configuration>
+                  <fork>true</fork>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.6.1</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <testSource>${java.version}</testSource>
+            <testTarget>${java.version}</testTarget>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.0.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <!-- build an uber JAR -->
+        <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-shade-plugin</artifactId>
+         <version>3.0.0</version>
+         <executions>
+           <execution>
+             <phase>package</phase>
+             <goals>
+               <goal>shade</goal>
+             </goals>
+             <configuration>
+               <shadedArtifactAttached>true</shadedArtifactAttached>
+               <shadedClassifierName>uber</shadedClassifierName>
+               <filters>
+                 <filter>
+                   <artifact>*:*</artifact>
+                   <excludes>
+                     <exclude>META-INF/*.SF</exclude>
+                     <exclude>META-INF/*.DSA</exclude>
+                     <exclude>META-INF/*.RSA</exclude>
+                   </excludes>
+                 </filter>
+               </filters>
+             </configuration>
+           </execution>
+         </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

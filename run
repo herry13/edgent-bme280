@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -cp target/edgent-bme280-1.0-SNAPSHOT-uber.jar org.uog.socs.EdgentBME280 $*
