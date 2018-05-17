@@ -31,4 +31,4 @@ To run:
 java -cp target/edgent-bme280-1.0-SNAPSHOT-uber.jar org.uog.socs.EdgentBME280 <local-ID> <remote-ID> <MQTT-Host>
 ```
 
-LICENSE: MIT
+License: [MIT](LICENSE)
